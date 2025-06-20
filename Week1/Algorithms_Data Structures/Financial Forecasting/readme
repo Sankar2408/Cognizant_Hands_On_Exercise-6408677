@@ -1,0 +1,12 @@
+Recursion simplifies repeated future-value calculations by breaking them into subproblems:
+
+FV(n) = FV(n-1) * (1 + rate)
+
+Time Complexity:
+
+Without memoization: O(n)
+
+With memoization: Still O(n), but avoids redundant calls
+
+Memoization improves performance for larger values of n
+
