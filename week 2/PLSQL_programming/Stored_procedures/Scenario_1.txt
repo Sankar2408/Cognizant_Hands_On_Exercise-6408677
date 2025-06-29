@@ -1,0 +1,32 @@
+CREATE TABLE savings_accounts (
+    account_id NUMBER PRIMARY KEY,
+    customer_name VARCHAR2(100),
+    balance NUMBER(12,2),
+    account_type VARCHAR2(20) -- e.g., 'SAVINGS', 'CURRENT'
+);
+
+
+INSERT INTO savings_accounts VALUES (101, 'Arun', 10000.00, 'SAVINGS');
+INSERT INTO savings_accounts VALUES (102, 'Sneha', 15000.00, 'SAVINGS');
+INSERT INTO savings_accounts VALUES (103, 'Ravi', 20000.00, 'CURRENT');
+INSERT INTO savings_accounts VALUES (104, 'Divya', 12000.00, 'SAVINGS');
+
+COMMIT;
+
+
+CREATE OR REPLACE PROCEDURE ProcessMonthlyInterest IS
+BEGIN
+    UPDATE savings_accounts
+    SET balance = balance + (balance * 0.01)
+    WHERE account_type = 'SAVINGS';
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE('Monthly interest processed for all savings accounts.');
+END;
+/
+
+BEGIN
+    ProcessMonthlyInterest;
+END;
+/

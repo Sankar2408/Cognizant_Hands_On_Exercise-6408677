@@ -1,0 +1,32 @@
+CREATE TABLE customer2 (
+    customer_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100),
+    loan_id NUMBER,
+    due_date DATE
+);
+
+
+-- Assuming today is 28-June-2025
+INSERT INTO customer2 VALUES (1, 'Karthik', 201, TO_DATE('10-JUL-2025', 'DD-MON-YYYY'));
+INSERT INTO customer2 VALUES (2, 'Meera',   202, TO_DATE('01-AUG-2025', 'DD-MON-YYYY'));
+INSERT INTO customer2 VALUES (3, 'Anil',    203, TO_DATE('05-JUL-2025', 'DD-MON-YYYY'));
+INSERT INTO customer2 VALUES (4, 'Deepa',   204, TO_DATE('15-AUG-2025', 'DD-MON-YYYY'));
+
+COMMIT;
+
+
+
+DECLARE
+    CURSOR due_soon_cursor IS
+        SELECT customer_id, name, loan_id, due_date
+        FROM customer2
+        WHERE due_date BETWEEN SYSDATE AND SYSDATE + 30;
+
+BEGIN
+    FOR rec IN due_soon_cursor LOOP
+        DBMS_OUTPUT.PUT_LINE('Reminder: Dear ' || rec.name ||
+                             ', your Loan ID ' || rec.loan_id ||
+                             ' is due on ' || TO_CHAR(rec.due_date, 'DD-MON-YYYY') || '.');
+    END LOOP;
+END;
+/

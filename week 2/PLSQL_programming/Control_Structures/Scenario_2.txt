@@ -1,0 +1,28 @@
+CREATE TABLE customers1 (
+    customer_id NUMBER PRIMARY KEY,
+    name VARCHAR2(100),
+    balance NUMBER(10,2),
+    isVIP CHAR(1) DEFAULT 'N'  -- 'Y' for TRUE, 'N' for FALSE
+);
+INSERT INTO customers1 VALUES (1, 'Arun', 9500, 'N');
+INSERT INTO customers1 VALUES (2, 'Sneha', 15000, 'N');
+INSERT INTO customers1 VALUES (3, 'Raj', 10500, 'N');
+INSERT INTO customers1 VALUES (4, 'Divya', 7000, 'N');
+
+COMMIT;
+
+
+BEGIN
+    FOR rec IN (SELECT customer_id, balance FROM customers1) LOOP
+        IF rec.balance > 10000 THEN
+            UPDATE customers1
+            SET isVIP = 'Y'
+            WHERE customer_id = rec.customer_id;
+
+            DBMS_OUTPUT.PUT_LINE('Customer ID ' || rec.customer_id || ' promoted to VIP.');
+        END IF;
+    END LOOP;
+
+    COMMIT;
+END;
+/

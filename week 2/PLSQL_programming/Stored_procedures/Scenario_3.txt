@@ -1,0 +1,58 @@
+CREATE TABLE customers3 (
+    account_id NUMBER PRIMARY KEY,
+    customer_name VARCHAR2(100),
+    balance NUMBER(12,2)
+);
+
+INSERT INTO customers3 VALUES (1001, 'Arun', 15000);
+INSERT INTO customers3 VALUES (1002, 'Meera', 8000);
+INSERT INTO customers3 VALUES (1003, 'Ravi', 12000);
+
+COMMIT;
+
+
+CREATE OR REPLACE PROCEDURE TransferFunds (
+    p_from_account IN NUMBER,
+    p_to_account IN NUMBER,
+    p_amount IN NUMBER
+) IS
+    v_balance NUMBER;
+BEGIN
+    -- Check if source account has sufficient balance
+    SELECT balance INTO v_balance
+    FROM customers3
+    WHERE account_id = p_from_account;
+
+    IF v_balance < p_amount THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Insufficient balance in source account.');
+    END IF;
+
+    -- Deduct amount from source account
+    UPDATE customers3
+    SET balance = balance - p_amount
+    WHERE account_id = p_from_account;
+
+    -- Add amount to destination account
+    UPDATE customers3
+    SET balance = balance + p_amount
+    WHERE account_id = p_to_account;
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE('Transferred ' || p_amount || 
+                         ' from Account ' || p_from_account ||
+                         ' to Account ' || p_to_account);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Account not found.');
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END;
+/
+
+
+BEGIN
+    TransferFunds(1001, 1002, 3000); -- Transfer ₹3000 from account 1001 to 1002
+END;
+/
